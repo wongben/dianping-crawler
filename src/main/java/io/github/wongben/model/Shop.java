@@ -16,8 +16,13 @@ public class Shop {
     private String regionName;//区域
     @ExcelCell(index = 4)
     private String priceText;// 价格
-    @ExcelCell(index = 5)
+    //@ExcelCell(index = 5)
     private String scoreText;// 评分
+    @ExcelCell(index = 5)
+    private String cityName;// 城市名称
+    @ExcelCell(index = 6)
+    private String location;// 区域
+
     public String getName() {
         return name;
     }
@@ -64,5 +69,21 @@ public class Shop {
 
     public void setScoreText(String scoreText) {
         this.scoreText = scoreText;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

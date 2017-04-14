@@ -6,10 +6,10 @@ import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.ComparatorChain;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,9 +141,9 @@ public class ExcelUtil {
     public static <T> void exportExcel(String[] headers, Collection<T> dataset, OutputStream out,
                                        String pattern) {
         // 声明一个工作薄
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        // 生成一个表格
-        HSSFSheet sheet = workbook.createSheet();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        // 生成一个表格XSSFWorkbook
+        XSSFSheet sheet = workbook.createSheet();
 
         write2Sheet(sheet, headers, dataset, pattern);
         try {
@@ -156,15 +156,15 @@ public class ExcelUtil {
     public static void exportExcel(String[][] datalist, OutputStream out) {
         try {
             // 声明一个工作薄
-            HSSFWorkbook workbook = new HSSFWorkbook();
+            XSSFWorkbook workbook = new XSSFWorkbook();
             // 生成一个表格
-            HSSFSheet sheet = workbook.createSheet();
+            XSSFSheet sheet = workbook.createSheet();
 
             for (int i = 0; i < datalist.length; i++) {
                 String[] r = datalist[i];
-                HSSFRow row = sheet.createRow(i);
+                XSSFRow row = sheet.createRow(i);
                 for (int j = 0; j < r.length; j++) {
-                    HSSFCell cell = row.createCell(j);
+                    XSSFCell cell = row.createCell(j);
                     //cell max length 32767
                     if (r[j].length() > 32767) {
                         r[j] = "--此字段过长(超过32767),已被截断--" + r[j];
@@ -212,11 +212,11 @@ public class ExcelUtil {
             return;
         }
         // 声明一个工作薄
-        HSSFWorkbook workbook = new HSSFWorkbook();
+        XSSFWorkbook workbook = new XSSFWorkbook();
         for (ExcelSheet<T> sheet : sheets) {
             // 生成一个表格
-            HSSFSheet hssfSheet = workbook.createSheet(sheet.getSheetName());
-            write2Sheet(hssfSheet, sheet.getHeaders(), sheet.getDataset(), pattern);
+            XSSFSheet xssfSheet = workbook.createSheet(sheet.getSheetName());
+            write2Sheet(xssfSheet, sheet.getHeaders(), sheet.getDataset(), pattern);
         }
         try {
             workbook.write(out);
@@ -233,13 +233,13 @@ public class ExcelUtil {
      * @param dataset 数据集合
      * @param pattern 日期格式
      */
-    private static <T> void write2Sheet(HSSFSheet sheet, String[] headers, Collection<T> dataset,
+    private static <T> void write2Sheet(XSSFSheet sheet, String[] headers, Collection<T> dataset,
                                         String pattern) {
         // 产生表格标题行
-        HSSFRow row = sheet.createRow(0);
+        XSSFRow row = sheet.createRow(0);
         for (int i = 0; i < headers.length; i++) {
-            HSSFCell cell = row.createCell(i);
-            HSSFRichTextString text = new HSSFRichTextString(headers[i]);
+            XSSFCell cell = row.createCell(i);
+            XSSFRichTextString text = new XSSFRichTextString(headers[i]);
             cell.setCellValue(text);
         }
 
@@ -261,7 +261,7 @@ public class ExcelUtil {
                             continue;
                         }
                         Object value = map.get(k);
-                        HSSFCell cell = row.createCell(cellNum);
+                        XSSFCell cell = row.createCell(cellNum);
                         cell.setCellValue(String.valueOf(value));
                         cellNum++;
                     }
@@ -269,7 +269,7 @@ public class ExcelUtil {
                     List<FieldForSortting> fields = sortFieldByAnno(t.getClass());
                     int cellNum = 0;
                     for (int i = 0; i < fields.size(); i++) {
-                        HSSFCell cell = row.createCell(cellNum);
+                        XSSFCell cell = row.createCell(cellNum);
                         Field field = fields.get(i).getField();
                         field.setAccessible(true);
                         Object value = field.get(t);
@@ -327,7 +327,7 @@ public class ExcelUtil {
                             textValue = value == null ? empty : value.toString();
                         }
                         if (textValue != null) {
-                            HSSFRichTextString richString = new HSSFRichTextString(textValue);
+                            XSSFRichTextString richString = new XSSFRichTextString(textValue);
                             cell.setCellValue(richString);
                         }
 
@@ -358,14 +358,14 @@ public class ExcelUtil {
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> importExcel(Class<T> clazz, InputStream inputStream,
                                                 String pattern, ExcelLogs logs, Integer... arrayCount) {
-        HSSFWorkbook workBook = null;
+        XSSFWorkbook workBook = null;
         try {
-            workBook = new HSSFWorkbook(inputStream);
+            workBook = new XSSFWorkbook(inputStream);
         } catch (IOException e) {
             LG.error(e.toString(), e);
         }
         List<T> list = new ArrayList<T>();
-        HSSFSheet sheet = workBook.getSheetAt(0);
+        XSSFSheet sheet = workBook.getSheetAt(0);
         Iterator<Row> rowIterator = sheet.rowIterator();
         try {
             List<ExcelLog> logList = new ArrayList<ExcelLog>();
